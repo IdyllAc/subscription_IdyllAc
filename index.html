@@ -8,35 +8,95 @@
     <meta name="description" content="Idyllic">
     <title>FLOATS CSS</title>
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="CSS/style.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="sass/main.scss">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-        integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-browser/0.1.0/jquery.browser.min.js"
+        integrity="sha512-7IUk8ZcM82NUtcQv8gBFQTbz0Z+yXiGQyOj+YvSOTv3ZQbxEBYrs4zmY4rrm4/opSN1Xv/oGONv5uCSqiYZy4g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.dropotron/1.4.3/jquery.dropotron.min.js"
+        integrity="sha512-ugEhUBPC3XfTEBbRia5d9er1tFe5N4yzwQr3xrNSTfmT09xe0fwYxgfDSLwUKCnFoFtLd5rJBZP5tdfcUzLNvw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-qFOQ9YFAeGj1gDOuUD61g3D+tLDv3u1ECYWqT82WQoaWrOhAY+5mRMTTVsQdWutbA5FORCnkEPEgU0OF8IzGvA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
     <script src="https://kit.fontawesome.com/cbdd759dc1.js" crossorigin="anonymous"></script>
+
+    <style>
+        /* .dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9 ;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  padding: 12px 16px;
+  z-index: 1;
+} 
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}   */
+    </style>
 
 
 </head>
 
 <body>
-
     <header class="header">
         <section class="hero">
             <h1 class="hero__h1">مرحبا بك في إيديلك </h1>
 
+            <!-- Nav -->
             <nav class="header__nav">
-
                 <ul class="header__ul">
-                    <a href="home">Home</a>
-                    <a href="services">Services</a>
-                    <a href="contact">Contact</a>
-                    <a href="about">About</a>
-                    <a href="videos">Videos</a>
-                    <a href="gallery">Gallery</a>
-                    <a href="login">Login</a>
-                    <a href="signup">ٍSignup</a>
-                    <br><br><br>
+                    <li class="current"><a href="index.html">Home</a></li>
+                    <li class="dropdown"><a href="#">Dropotron</a>
+                        <ul class="dropdown-content">
+                            <li><a href="#">Carrencies</a></li>
+                            <li><a href="#">Sevices</a></li>
+                            <li><a href="#">Exchange</a></li>
+                            <li><a href="#">Gallery</a></li>
+                            <li><a href="#">Videos</a></li>
+                            <li><a href="#">Submenu</a>
+                                <ul class="dropdown-right">
+                                    <li><a href="#">Travel</a></li>
+                                    <li><a href="#">Airlines</a></li>
+                                    <li><a href="#">Tourist</a></li>
+                                </ul>
+
+                            <li><a href="#">?????</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="https://idyllac.github.io/minu_product/hours">Hours</a></li>
+                    <li><a href="https://idyllac.github.io/minu_product/contact">Contact</a></li>
+                    <li><a href="https://idyllac.github.io/minu_product/menu.html">بطاقات محلية</a></li>
+                    <li><a href="https://idyllac.github.io/minu_product/">بطاقات دولية</a></li>
+                    <li><a href="https://idyllac.github.io/authen-login.github.io/views/login">Login</a></li>
+                    <li><a href="https://idyllac.github.io/authen-login.github.io/views/register">Signup</a></li>
+                    <li><a href="#">Search</a></li>
                 </ul>
             </nav>
     </header>
@@ -202,14 +262,15 @@
 
         </footer>
 
+
         <!-- Scripts -->
-        <script src="main.js"></script>
-        <script src="assets/js/jquery.min.js"></script>
-        <script src="assets/js/jquery.dropotron.min.js"></script>
-        <script src="assets/js/browser.min.js"></script>
-        <script src="assets/js/breakpoints.min.js"></script>
-        <script src="assets/js/util.js"></script>
-        <script src="assets/js/main.js"></script>
+        <script src="./main.js"></script>
+        <script src="./js/jquery.min.js"></script>
+        <script src="./js/jquery.dropotron.min.js"></script>
+        <script src="./js/browser.min.js"></script>
+        <script src="./js/breakpoints.min.js"></script>
+        <script src="./js/util.js"></script>
+        <script src="./js/main.js"></script>
 
 </body>
 

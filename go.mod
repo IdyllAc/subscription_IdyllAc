@@ -5,7 +5,7 @@ go 1.24.2
 require (
 	github.com/markbates/goth v1.81.0
 	github.com/mattn/go-sqlite3 v1.14.28
-	golang.org/x/oauth2 v0.29.0
+	golang.org/x/oauth2 v0.29.0 
 	google.golang.org/api v0.126.0
 )
 

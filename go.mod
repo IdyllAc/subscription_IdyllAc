@@ -7,12 +7,14 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.28
 )
 
+require cloud.google.com/go/compute/metadata v0.3.0 // indirect
+
 require (
-	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	github.com/go-chi/chi/v5 v5.1.0 // indirect
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.6.2 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/sessions v1.1.1 // indirect
+	github.com/joho/godotenv v1.5.1
 	golang.org/x/oauth2 v0.29.0 // indirect
 )

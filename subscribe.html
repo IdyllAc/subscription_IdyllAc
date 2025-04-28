@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>Subscribe to News</title>
+  <link rel="stylesheet" href="/static/style.css">
+
   <style>
     body { font-family: Arial; padding: 2rem; text-align: center;}
     input[type="email"] { padding: 0.5rem; width: 300px; }
@@ -17,9 +19,9 @@
   <p>Choose how you want to subscribe:</p>
 
   <h2>📧 Subscribe via Email</h2>
-  <form action="/subscribe/email" method="POST">
-    <input type="email" name="email" placeholder="Your email address" required />
-    <input type="submit" value="Subscribe" />
+  <form action="/subscribe" method="POST">
+    <input type="email" name="email" placeholder="Enter your email" required />
+    <button type="submit">Subscribe</button>
   </form> 
 
   <hr>

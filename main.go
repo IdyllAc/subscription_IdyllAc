@@ -26,7 +26,7 @@ func main() {
 	// Initialize the database
 	godotenv.Load()
 	var err error
-	db, err = sql.Open("sqlite3", "./subscribers.db")
+	db, err = sql.Open("sqlite3", "./db_subscribers")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -39,7 +39,7 @@ func main() {
 			"842237368120640",     // 👉 Replace this with your real App ID
 			"02d25f9c8470d6835d10858bfa12b4c7", // 👉 Replace with your App Secret
 			"http://localhost:8080/auth/facebook/callback"),
-			google.New("GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "http://localhost:8080/auth/google/callback", "email", "profile"),
+			google.New("842237368120640", "02d25f9c8470d6835d10858bfa12b4c7", "http://localhost:8080/auth/google/callback", "email", "profile"),
 	)
 
 	// Routes

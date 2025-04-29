@@ -12,8 +12,10 @@ import (
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/facebook"
+	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/google"
-	_ "github.com/mattn/go-sqlite3"
+
+	_ "modernc.org/sqlite"
 )
 
 var db *sql.DB
@@ -30,7 +32,7 @@ http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	// Initialize database
 	var err error
-	db, err = sql.Open("sqlite3", "./db_subscribers")
+	db, err = sql.Open("sqlite", "./db_subscribers")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,8 +44,8 @@ http.Handle("/static/", http.StripPrefix("/static/", fs))
 	// Setup OAuth Providers
 	goth.UseProviders(
 		facebook.New(
-			"842237368120640", // 👉 Replace with your Facebook App ID
-			"02d25f9c8470d6835d10858bfa12b4c7", // 👉 Replace with your Facebook App Secret
+			"681792221066350", // 👉 Replace with your Facebook App ID
+			"32d989f30ad5da192a1548340e6fe2ff", // 👉 Replace with your Facebook App Secret
 			"http://localhost:8080/auth/facebook/callback",
 		),
 		google.New(
@@ -51,6 +53,11 @@ http.Handle("/static/", http.StripPrefix("/static/", fs))
 			"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", // 👉 Replace with your Google Client Secret
 			"http://localhost:8080/auth/google/callback",
 			"email", "profile",
+		),
+		github.New(
+			"Ov23lizsJT6GZblzvDPW",        // 👉 Replace with your real GitHub Client ID
+			"168d33d988717c92ff783881837cc13a50095ec4",    // 👉 Replace with your real GitHub Client Secret
+			"http://localhost:8080/auth/github/callback",
 		),
 	)
 
@@ -62,6 +69,9 @@ http.Handle("/static/", http.StripPrefix("/static/", fs))
 	http.HandleFunc("/auth/facebook/callback", handleFacebookCallback)
 	http.HandleFunc("/auth/google", handleGoogleLogin)
 	http.HandleFunc("/auth/google/callback", handleGoogleCallback)
+	http.HandleFunc("/auth/github", handleGitHubLogin)
+http.HandleFunc("/auth/github/callback", handleGitHubCallback)
+
 
 	// Start server
 	fmt.Println("✅ Server started at http://localhost:8080")
@@ -177,3 +187,18 @@ func handleGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Fprintf(w, "✅ Google Login Successful!\n\nName: %s\nEmail: %s\n", user.Name, user.Email)
 }
+
+func handleGitHubLogin(w http.ResponseWriter, r *http.Request) {
+	r.URL.RawQuery = "provider=github"
+	gothic.BeginAuthHandler(w, r)
+}
+
+func handleGitHubCallback(w http.ResponseWriter, r *http.Request) {
+	user, err := gothic.CompleteUserAuth(w, r)
+	if err != nil {
+					http.Error(w, "Login failed: "+err.Error(), http.StatusInternalServerError)
+					return
+	}
+	fmt.Fprintf(w, "✅ GitHub Login Successful!\nName: %s\nEmail: %s\n", user.Name, user.Email)
+}
+

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/smtp"
 	"net/url"
+	_ "modernc.org/sqlite"
 
 	"github.com/joho/godotenv"
 	"github.com/markbates/goth"
@@ -14,32 +15,31 @@ import (
 	"github.com/markbates/goth/providers/facebook"
 	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/google"
-
-	_ "modernc.org/sqlite"
 )
 
 var db *sql.DB
 
-
 func main() {
-	// Load environment variables
-	godotenv.Load()
+
+ 	// Load environment variables
+ 	godotenv.Load()
 
 	// Serve static files (CSS, JS, Images, etc)
-fs := http.FileServer(http.Dir("./static"))
-http.Handle("/static/", http.StripPrefix("/static/", fs))
+ fs := http.FileServer(http.Dir("./static"))
+ http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 
 	// Initialize database
 	var err error
-	db, err = sql.Open("sqlite", "./db_subscribers")
+	db, err = sql.Open("sqlite", "./db_subscribers") // ✅ Adjusted for modernc.org/sqlite
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
-	// Create subscribers table if not exists
+	// Create table if it doesn't exists
 	createTable()
+
 
 	// Setup OAuth Providers
 	goth.UseProviders(
@@ -70,33 +70,34 @@ http.Handle("/static/", http.StripPrefix("/static/", fs))
 	http.HandleFunc("/auth/google", handleGoogleLogin)
 	http.HandleFunc("/auth/google/callback", handleGoogleCallback)
 	http.HandleFunc("/auth/github", handleGitHubLogin)
-http.HandleFunc("/auth/github/callback", handleGitHubCallback)
-
+ http.HandleFunc("/auth/github/callback", handleGitHubCallback)
 
 	// Start server
 	fmt.Println("✅ Server started at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
+// ✅ This function is now outside of main
 func createTable() {
-	query := `
-	CREATE TABLE IF NOT EXISTS subscribers (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		email TEXT UNIQUE NOT NULL
-	);
-	`
-	_, err := db.Exec(query)
-	if err != nil {
-		log.Fatalf("❌ Failed to create DB table: %v", err)
+query := `
+		CREATE TABLE IF NOT EXISTS subscribers (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			email TEXT UNIQUE NOT NULL
+		);
+		`
+		_, err := db.Exec(query)
+		if err != nil {
+			log.Fatalf("❌ Failed to create DB table: %v", err)
+		}
 	}
-}
+
 
 func serveIndex(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
-	http.ServeFile(w, r, "index.html")
+	http.ServeFile(w, r, "/Users/stidyllac/Desktop/myidyArabic/index.html")
 }
 
 func serveSubscribe(w http.ResponseWriter, r *http.Request) {
@@ -104,7 +105,7 @@ func serveSubscribe(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
-	http.ServeFile(w, r, "subscribe.html")
+	http.ServeFile(w, r, "/Users/stidyllac/Desktop/myidyArabic/subscribe.html")
 }
 
 func handleEmailSubscription(w http.ResponseWriter, r *http.Request) {

@@ -7,9 +7,11 @@ import (
 	"net/http"
 	"net/smtp"
 	"net/url"
+	"os"
 
 	_ "modernc.org/sqlite"
 
+	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
@@ -21,8 +23,22 @@ import (
 var db *sql.DB
 
 func main() {
- 	// Load environment variables
+ 	// Load .env environment variables
  	godotenv.Load()
+
+// Set SESSION_SECRET for Goth
+key := os.Getenv("c7602c7d046bf86055a5f545d21d34979f337d7382d919b65b9f5a332c7cb533532b5cf8af7e14b33e8f352e36344577781fc80b553cd22e3478cbb917696c60")
+maxAge := 86400 * 30 // 30 days
+isProd := false       // change to true in production
+
+store := sessions.NewCookieStore([]byte(key))
+store.MaxAge(maxAge)
+store.Options.Path = "/"
+store.Options.HttpOnly = true
+store.Options.Secure = isProd
+
+gothic.Store = store
+
 
 	// Serve static files (CSS, JS, Images, etc)
  fs := http.FileServer(http.Dir("./static"))
@@ -146,7 +162,7 @@ func handleEmailSubscription(w http.ResponseWriter, r *http.Request) {
 
 func sendConfirmationEmail(to string, link string) {
 	from := "idyllacg@gmail.com"          // ✅ Your Gmail address
-	password := "pscb hulw fkoq vrnw"         // ✅ App password (not Gmail login password)
+	password := "ewbr xtgv nlxi dxmy"         // ✅ App password (not Gmail login password)
 	subject := "Verify your subscription"
 	body := fmt.Sprintf("Click the link to verify your subscription:\n\n%s", link)
 

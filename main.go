@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/smtp"
 	"net/url"
+
 	_ "modernc.org/sqlite"
 
 	"github.com/joho/godotenv"
@@ -20,7 +21,6 @@ import (
 var db *sql.DB
 
 func main() {
-
  	// Load environment variables
  	godotenv.Load()
 
@@ -44,8 +44,8 @@ func main() {
 	// Setup OAuth Providers
 	goth.UseProviders(
 		facebook.New(
-			"681792221066350", // 👉 Replace with your Facebook App ID
-			"32d989f30ad5da192a1548340e6fe2ff", // 👉 Replace with your Facebook App Secret
+			"1414625536386549", // 👉 Replace with your Facebook App ID
+			"34b3780d34e63750b0a2af27f52490e1", // 👉 Replace with your Facebook App Secret
 			"http://localhost:8080/auth/facebook/callback",
 		),
 		google.New(
@@ -61,14 +61,17 @@ func main() {
 		),
 	)
 
-	// Routes
-	http.HandleFunc("/", serveIndex)
+	// Setup Routes
+  http.HandleFunc("/", serveIndex)
 	http.HandleFunc("/subscribe", serveSubscribe)
 	http.HandleFunc("/subscribe/email", handleEmailSubscription)
+
 	http.HandleFunc("/auth/facebook", handleFacebookLogin)
 	http.HandleFunc("/auth/facebook/callback", handleFacebookCallback)
+
 	http.HandleFunc("/auth/google", handleGoogleLogin)
 	http.HandleFunc("/auth/google/callback", handleGoogleCallback)
+
 	http.HandleFunc("/auth/github", handleGitHubLogin)
  http.HandleFunc("/auth/github/callback", handleGitHubCallback)
 
@@ -97,15 +100,17 @@ func serveIndex(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
-	http.ServeFile(w, r, "/Users/stidyllac/Desktop/myidyArabic/index.html")
+	http.ServeFile(w, r, "index.html")
 }
 
 func serveSubscribe(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	 // Ensure the method is GET to serve the subscription page
+	if r.Method == http.MethodGet {
+		 // Serve the subscribe.html file
+		http.ServeFile(w, r, "subscribe.html")
+	} else {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
 	}
-	http.ServeFile(w, r, "/Users/stidyllac/Desktop/myidyArabic/subscribe.html")
 }
 
 func handleEmailSubscription(w http.ResponseWriter, r *http.Request) {
@@ -114,12 +119,14 @@ func handleEmailSubscription(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	email := r.FormValue("email")
+	email := r.FormValue("email")  // Get the email from the form submission
 	if email == "" {
 		http.Error(w, "Email is required", http.StatusBadRequest)
 		return
 	}
 
+	
+	// Save to database
 	_, err := db.Exec("INSERT OR IGNORE INTO subscribers (email) VALUES (?)", email)
 	if err != nil {
 		http.Error(w, "Failed to save email", http.StatusInternalServerError)
@@ -127,6 +134,7 @@ func handleEmailSubscription(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+ // Prepare confirmation link
 	// Generate verification link
 	link := "http://localhost:8080/verify?email=" + url.QueryEscape(email)
 
@@ -137,8 +145,8 @@ func handleEmailSubscription(w http.ResponseWriter, r *http.Request) {
 }
 
 func sendConfirmationEmail(to string, link string) {
-	from := "victor.via7@gmail.com"          // ✅ Your Gmail address
-	password := "feyu ndvj skxu wbxj"         // ✅ App password (not Gmail login password)
+	from := "idyllacg@gmail.com"          // ✅ Your Gmail address
+	password := "pscb hulw fkoq vrnw"         // ✅ App password (not Gmail login password)
 	subject := "Verify your subscription"
 	body := fmt.Sprintf("Click the link to verify your subscription:\n\n%s", link)
 
@@ -146,13 +154,9 @@ func sendConfirmationEmail(to string, link string) {
 		"To: " + to + "\n" +
 		"Subject: " + subject + "\n\n" + body
 
-	err := smtp.SendMail(
-		"smtp.gmail.com:587",
+	err := smtp.SendMail("smtp.gmail.com:587",
 		smtp.PlainAuth("", from, password, "smtp.gmail.com"),
-		from,
-		[]string{to},
-		[]byte(msg),
-	)
+		from, []string{to}, []byte(msg))
 
 	if err != nil {
 		log.Printf("❌ Failed to send email to %s: %v", to, err)
@@ -169,7 +173,7 @@ func handleFacebookLogin(w http.ResponseWriter, r *http.Request) {
 func handleFacebookCallback(w http.ResponseWriter, r *http.Request) {
 	user, err := gothic.CompleteUserAuth(w, r)
 	if err != nil {
-		http.Error(w, "Login failed: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Facebook Login failed: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	fmt.Fprintf(w, "✅ Facebook Login Successful!\nName: %s\nEmail: %s\n", user.Name, user.Email)
@@ -183,7 +187,7 @@ func handleGoogleLogin(w http.ResponseWriter, r *http.Request) {
 func handleGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	user, err := gothic.CompleteUserAuth(w, r)
 	if err != nil {
-		http.Error(w, "Login failed: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Google Login failed: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	fmt.Fprintf(w, "✅ Google Login Successful!\n\nName: %s\nEmail: %s\n", user.Name, user.Email)
@@ -197,7 +201,7 @@ func handleGitHubLogin(w http.ResponseWriter, r *http.Request) {
 func handleGitHubCallback(w http.ResponseWriter, r *http.Request) {
 	user, err := gothic.CompleteUserAuth(w, r)
 	if err != nil {
-					http.Error(w, "Login failed: "+err.Error(), http.StatusInternalServerError)
+					http.Error(w, "GitHub Login failed: "+err.Error(), http.StatusInternalServerError)
 					return
 	}
 	fmt.Fprintf(w, "✅ GitHub Login Successful!\nName: %s\nEmail: %s\n", user.Name, user.Email)

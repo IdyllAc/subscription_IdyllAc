@@ -78,9 +78,13 @@ gothic.Store = store
 	)
 
 	// Setup Routes
-  http.HandleFunc("/", serveIndex)
+ // http.HandleFunc("/", serveIndex)
 	http.HandleFunc("/subscribe", serveSubscribe)
 	http.HandleFunc("/subscribe/email", handleEmailSubscription)
+
+	http.HandleFunc("/subscribers", handleListSubscribers)
+
+	http.HandleFunc("/view-emails", handleViewEmails)
 
 	http.HandleFunc("/auth/facebook", handleFacebookLogin)
 	http.HandleFunc("/auth/facebook/callback", handleFacebookCallback)
@@ -90,6 +94,9 @@ gothic.Store = store
 
 	http.HandleFunc("/auth/github", handleGitHubLogin)
  http.HandleFunc("/auth/github/callback", handleGitHubCallback)
+
+	http.HandleFunc("/submit", handleFormSubmission)
+
 
 	// Start server
 	fmt.Println("✅ Server started at http://localhost:8080")
@@ -111,13 +118,13 @@ query := `
 	}
 
 
-func serveIndex(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
-	}
-	http.ServeFile(w, r, "index.html")
-}
+// func serveIndex(w http.ResponseWriter, r *http.Request) {
+// 	if r.Method != http.MethodGet {
+// 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+// 		return
+// 	}
+// 	http.ServeFile(w, r, "index.html")
+// }
 
 func serveSubscribe(w http.ResponseWriter, r *http.Request) {
 	 // Ensure the method is GET to serve the subscription page
@@ -142,23 +149,38 @@ func handleEmailSubscription(w http.ResponseWriter, r *http.Request) {
 	}
 
 	
-	// Save to database
+	// Insert into database
 	_, err := db.Exec("INSERT OR IGNORE INTO subscribers (email) VALUES (?)", email)
 	if err != nil {
-		http.Error(w, "Failed to save email", http.StatusInternalServerError)
-		log.Println("DB error:", err)
+		log.Println("❌ DB error:", err)
+		http.Error(w, "Failed to save email to database"+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
- // Prepare confirmation link
+// Save to .txt file
+file, err := os.OpenFile("subscribers_emails.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Println("❌ File open error:", err)
+		http.Error(w, "Failed to open file: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer file.Close()
+
+	if _, err := file.WriteString(email + "\n"); err != nil {
+		log.Println("❌ File write error:", err)
+		http.Error(w, "Failed to write to file: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	// Generate verification link
 	link := "http://localhost:8080/verify?email=" + url.QueryEscape(email)
 
 	// Send confirmation email
 	sendConfirmationEmail(email, link)
 
-	fmt.Fprintf(w, "✅ Thanks! Subscription successful, confirmation sent to: %s", email)
-}
+	// Final response to client
+	fmt.Fprintf(w, "✅ Subscription successful! A confirmation has been sent to: %s", email)
+	}
 
 func sendConfirmationEmail(to string, link string) {
 	from := "idyllacg@gmail.com"          // ✅ Your Gmail address
@@ -180,6 +202,39 @@ func sendConfirmationEmail(to string, link string) {
 		log.Printf("✅ Confirmation email sent to %s", to)
 	}
 }
+
+func handleViewEmails(w http.ResponseWriter, r *http.Request) {
+	data, err := os.ReadFile("./subscribe/emails.txt")
+	if err != nil {
+		http.Error(w, "Failed to read emails", http.StatusInternalServerError)
+		return
+	}
+	w.Write(data)
+}
+
+
+func handleListSubscribers(w http.ResponseWriter, r *http.Request) {
+	rows, err := db.Query("SELECT email FROM subscribers")
+	if err != nil {
+		http.Error(w, "Failed to fetch subscribers", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var result string
+	for rows.Next() {
+		var email string
+		if err := rows.Scan(&email); err != nil {
+			continue
+		}
+		result += email + "\n"
+	}
+
+	w.Write([]byte("✅ Subscribers List:\n" + result))
+}
+
+
+
 
 func handleFacebookLogin(w http.ResponseWriter, r *http.Request) {
 	r.URL.RawQuery = "provider=facebook"
@@ -222,4 +277,37 @@ func handleGitHubCallback(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Fprintf(w, "✅ GitHub Login Successful!\nName: %s\nEmail: %s\n", user.Name, user.Email)
 }
+
+
+func handleFormSubmission(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Parse form data
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "ParseForm() error: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	email := r.FormValue("email")
+	message := r.FormValue("message")
+
+	if email == "" || message == "" {
+		http.Error(w, "Email and message are required", http.StatusBadRequest)
+		return
+	}
+
+	// Example: Print to console
+	fmt.Printf("✅ New message from %s: %s\n", email, message)
+
+	// (Optional) Save to database or send as email...
+
+	w.Write([]byte("✅ Thank you for your message!"))
+}
+
+
+
+
 

@@ -16,8 +16,8 @@ import (
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/facebook"
-	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/google"
+	"github.com/markbates/goth/providers/github"
 )
 
 var db *sql.DB
@@ -49,7 +49,7 @@ gothic.Store = store
 	var err error
 	db, err = sql.Open("sqlite", "./db_subscribers") // ✅ Adjusted for modernc.org/sqlite
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("DB open error", err)
 	}
 	defer db.Close()
 
@@ -78,7 +78,7 @@ gothic.Store = store
 	)
 
 	// Setup Routes
- // http.HandleFunc("/", serveIndex)
+  http.HandleFunc("/", serveIndex)
 	http.HandleFunc("/subscribe", serveSubscribe)
 	http.HandleFunc("/subscribe/email", handleEmailSubscription)
 
@@ -118,13 +118,13 @@ query := `
 	}
 
 
-// func serveIndex(w http.ResponseWriter, r *http.Request) {
-// 	if r.Method != http.MethodGet {
-// 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-// 		return
-// 	}
-// 	http.ServeFile(w, r, "index.html")
-// }
+func serveIndex(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+	http.ServeFile(w, r, "index.html")
+}
 
 func serveSubscribe(w http.ResponseWriter, r *http.Request) {
 	 // Ensure the method is GET to serve the subscription page

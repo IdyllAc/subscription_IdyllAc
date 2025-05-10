@@ -16,8 +16,8 @@ import (
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/facebook"
-	"github.com/markbates/goth/providers/google"
 	"github.com/markbates/goth/providers/github"
+	"github.com/markbates/goth/providers/google"
 )
 
 var db *sql.DB
@@ -27,7 +27,7 @@ func main() {
  	godotenv.Load()
 
 // Set SESSION_SECRET for Goth
-key := os.Getenv("c7602c7d046bf86055a5f545d21d34979f337d7382d919b65b9f5a332c7cb533532b5cf8af7e14b33e8f352e36344577781fc80b553cd22e3478cbb917696c60")
+key := os.Getenv("SESSION_SECRET")
 maxAge := 86400 * 30 // 30 days
 isProd := false       // change to true in production
 
@@ -36,7 +36,6 @@ store.MaxAge(maxAge)
 store.Options.Path = "/"
 store.Options.HttpOnly = true
 store.Options.Secure = isProd
-
 gothic.Store = store
 
 
@@ -47,7 +46,7 @@ gothic.Store = store
 
 	// Initialize database
 	var err error
-	db, err = sql.Open("sqlite", "./db_subscribers") // ✅ Adjusted for modernc.org/sqlite
+	db, err = sql.Open("sqlite", "./db_subscribers.db") // ✅ Adjusted for modernc.org/sqlite
 	if err != nil {
 		log.Fatal("DB open error", err)
 	}
@@ -86,6 +85,8 @@ gothic.Store = store
 
 	http.HandleFunc("/view-emails", handleViewEmails)
 
+	http.HandleFunc("/submit", handleFormSubmission)
+
 	http.HandleFunc("/auth/facebook", handleFacebookLogin)
 	http.HandleFunc("/auth/facebook/callback", handleFacebookCallback)
 
@@ -95,7 +96,7 @@ gothic.Store = store
 	http.HandleFunc("/auth/github", handleGitHubLogin)
  http.HandleFunc("/auth/github/callback", handleGitHubCallback)
 
-	http.HandleFunc("/submit", handleFormSubmission)
+	
 
 
 	// Start server
@@ -183,8 +184,8 @@ file, err := os.OpenFile("subscribers_emails.txt", os.O_APPEND|os.O_CREATE|os.O_
 	}
 
 func sendConfirmationEmail(to string, link string) {
-	from := "idyllacg@gmail.com"          // ✅ Your Gmail address
-	password := "ewbr xtgv nlxi dxmy"         // ✅ App password (not Gmail login password)
+	from := "victor.via7@gmail.com"          // ✅ Your Gmail address
+	password := "ewbr xtgv nlxi dxmy"        // ✅ App password (not Gmail login password)
 	subject := "Verify your subscription"
 	body := fmt.Sprintf("Click the link to verify your subscription:\n\n%s", link)
 
@@ -232,8 +233,6 @@ func handleListSubscribers(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte("✅ Subscribers List:\n" + result))
 }
-
-
 
 
 func handleFacebookLogin(w http.ResponseWriter, r *http.Request) {

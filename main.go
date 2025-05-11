@@ -46,7 +46,7 @@ gothic.Store = store
 
 	// Initialize database
 	var err error
-	db, err = sql.Open("sqlite", "./db_subscribers.db") // ✅ Adjusted for modernc.org/sqlite
+	db, err = sql.Open("sqlite", "./subscribers/DB_subscribers.db") // ✅ Adjusted for modernc.org/sqlite
 	if err != nil {
 		log.Fatal("DB open error", err)
 	}

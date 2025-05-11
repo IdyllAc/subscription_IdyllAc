@@ -59,25 +59,25 @@ gothic.Store = store
 	// Setup OAuth Providers
 	goth.UseProviders(
 		facebook.New(
-			"1414625536386549", // 👉 Replace with your Facebook App ID
-			"34b3780d34e63750b0a2af27f52490e1", // 👉 Replace with your Facebook App Secret
+			"FACEBOOK_KEY", // 👉 Replace with your Facebook App ID
+			"FACEBOOK_SECRET", // 👉 Replace with your Facebook App Secret
 			"http://localhost:8080/auth/facebook/callback",
 		),
 		google.New(
-			"94664221445-u9fkhtf34koasqnrf93vakqfdoe4nitl.apps.googleusercontent.com", // 👉 Replace with your Google Client ID
-			"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", // 👉 Replace with your Google Client Secret
+			"GOOGLE_KEY", // 👉 Replace with your Google Client ID
+			"GOOGLE_SECRET", // 👉 Replace with your Google Client Secret
 			"http://localhost:8080/auth/google/callback",
 			"email", "profile",
 		),
 		github.New(
-			"Ov23lizsJT6GZblzvDPW",        // 👉 Replace with your real GitHub Client ID
-			"168d33d988717c92ff783881837cc13a50095ec4",    // 👉 Replace with your real GitHub Client Secret
+			"GITHUB_KEY",        // 👉 Replace with your real GitHub Client ID
+			"GITHUB_SECRET",    // 👉 Replace with your real GitHub Client Secret
 			"http://localhost:8080/auth/github/callback",
 		),
 	)
 
 	// Setup Routes
-  http.HandleFunc("/", serveIndex)
+ http.HandleFunc("/", serveIndex)
 	http.HandleFunc("/subscribe", serveSubscribe)
 	http.HandleFunc("/subscribe/email", handleEmailSubscription)
 
@@ -175,7 +175,6 @@ file, err := os.OpenFile("subscribers_emails.txt", os.O_APPEND|os.O_CREATE|os.O_
 
 	// Generate verification link
 	link := "http://localhost:8080/verify?email=" + url.QueryEscape(email)
-
 	// Send confirmation email
 	sendConfirmationEmail(email, link)
 
@@ -184,8 +183,9 @@ file, err := os.OpenFile("subscribers_emails.txt", os.O_APPEND|os.O_CREATE|os.O_
 	}
 
 func sendConfirmationEmail(to string, link string) {
-	from := "victor.via7@gmail.com"          // ✅ Your Gmail address
-	password := "ewbr xtgv nlxi dxmy"        // ✅ App password (not Gmail login password)
+	from := "EMAIL_USERNAME"          // ✅ Your Gmail address
+	password := "EMAIL_PASSWORD"        // ✅ App password (not Gmail login password)
+
 	subject := "Verify your subscription"
 	body := fmt.Sprintf("Click the link to verify your subscription:\n\n%s", link)
 
@@ -202,15 +202,6 @@ func sendConfirmationEmail(to string, link string) {
 	} else {
 		log.Printf("✅ Confirmation email sent to %s", to)
 	}
-}
-
-func handleViewEmails(w http.ResponseWriter, r *http.Request) {
-	data, err := os.ReadFile("./subscribe/emails.txt")
-	if err != nil {
-		http.Error(w, "Failed to read emails", http.StatusInternalServerError)
-		return
-	}
-	w.Write(data)
 }
 
 
@@ -232,6 +223,16 @@ func handleListSubscribers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write([]byte("✅ Subscribers List:\n" + result))
+}
+
+
+func handleViewEmails(w http.ResponseWriter, r *http.Request) {
+	data, err := os.ReadFile("./subscribers/emails.txt")
+	if err != nil {
+		http.Error(w, "Failed to read emails", http.StatusInternalServerError)
+		return
+	}
+	w.Write(data)
 }
 
 

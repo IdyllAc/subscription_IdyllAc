@@ -120,18 +120,18 @@ query := `
 
 
 func serveIndex(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
-	http.ServeFile(w, r, "index.html")
+	http.ServeFile(w, r, "static/index.html")
 }
 
 func serveSubscribe(w http.ResponseWriter, r *http.Request) {
 	 // Ensure the method is GET to serve the subscription page
 	if r.Method == http.MethodGet {
 		 // Serve the subscribe.html file
-		http.ServeFile(w, r, "subscribe.html")
+		http.ServeFile(w, r, "static/subscribe.html")
 	} else {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
@@ -183,8 +183,8 @@ file, err := os.OpenFile("subscribers_emails.txt", os.O_APPEND|os.O_CREATE|os.O_
 	}
 
 func sendConfirmationEmail(to string, link string) {
-	from := "EMAIL_USERNAME"          // ✅ Your Gmail address
-	password := "EMAIL_PASSWORD"        // ✅ App password (not Gmail login password)
+	from := "SMTP_EMAIL"          // ✅ Your Gmail address
+	password := "SMTP_PASS"        // ✅ App password (not Gmail login password)
 
 	subject := "Verify your subscription"
 	body := fmt.Sprintf("Click the link to verify your subscription:\n\n%s", link)
